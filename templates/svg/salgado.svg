@@ -1,0 +1,10 @@
+<svg class="ilustra-salgado" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60 8c14 26 46 58 42 94-3 26-22 38-42 38s-39-12-42-38C14 66 46 34 60 8Z" fill="#C98B4A"/>
+  <path d="M19 108c4 20 21 32 41 32s37-12 41-32c-10 10-24 15-41 15s-31-5-41-15Z" fill="#A86F35"/>
+  <g fill="#8A5626">
+    <circle cx="44" cy="70" r="2.6"/><circle cx="70" cy="58" r="2.2"/><circle cx="78" cy="88" r="2.6"/>
+    <circle cx="52" cy="96" r="2.2"/><circle cx="64" cy="112" r="2.6"/><circle cx="38" cy="104" r="2"/>
+    <circle cx="86" cy="108" r="2"/><circle cx="60" cy="40" r="2"/>
+  </g>
+  <path d="M46 52c-6 10-10 22-10 34" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+</svg>

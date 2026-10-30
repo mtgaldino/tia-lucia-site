@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ loja }}</title>
+  <meta name="description" content="Salgados, algodão doce e maçã do amor para festas e eventos, e pick-up de salgados da estufa. Monte seu pedido e finalize pelo WhatsApp.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="arcoiris" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="110" y2="100">
+        <stop offset="0" stop-color="#F4B6C8"/>
+        <stop offset=".35" stop-color="#F6E08A"/>
+        <stop offset=".65" stop-color="#8EC5E8"/>
+        <stop offset="1" stop-color="#A98BCB"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <header class="topo">
+    <p class="faixa-loja faixa-loja--{{ situacao.tipo }}" data-faixa-loja role="status">{{ situacao.mensagem }}</p>
+    <div class="container topo-inner">
+      <a href="#inicio" class="marca">
+        <span class="marca-icone" aria-hidden="true">{% include "svg/algodao.svg" %}</span>
+        {{ loja }}
+      </a>
+      <nav class="menu" aria-label="Principal">
+        <a href="#salgados">Salgados</a>
+        <a href="#pickup" data-ir-pickup>Pick-up</a>
+        <a href="#doces">Doces</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#informacoes">Informações</a>
+      </nav>
+      <button class="btn-carrinho" type="button" data-abrir-carrinho aria-label="Abrir carrinho">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20.5" r="1.4" fill="currentColor"/><circle cx="17" cy="20.5" r="1.4" fill="currentColor"/></svg>
+        <span>Carrinho</span>
+        <span class="badge" data-badge hidden>0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-inner">
+        <div class="hero-texto">
+          <p class="selo">Ideal para festas e eventos</p>
+          <h1>Salgados e doces feitos na hora para a sua festa.</h1>
+          <p class="hero-sub">Encomende salgados, algodão doce e maçã do amor para o seu evento. Com pressa? Peça um salgado da estufa no caminho e só retire no balcão.</p>
+          <div class="hero-acoes">
+            <a href="#salgados" class="btn btn-primario">Encomendar</a>
+            <a href="#pickup" class="btn btn-fantasma" data-ir-pickup>Pick-up: retire hoje</a>
+          </div>
+          <!-- 
+          <ul class="hero-precos">
+            <li><strong>{{ brl(tamanhos.grande.precos[encomenda]) }}</strong><span>salgado grande na encomenda</span></li>
+            <li><strong>{{ brl(produtos.algodao.opcoes.palito.preco) }}</strong><span>algodão no palito</span></li>
+            <li><strong>{{ brl(produtos.maca.opcoes.pequena.preco) }}</strong><span>maçã do amor</span></li>
+          </ul>
+          -->
+        </div>
+        <div class="hero-arte" aria-hidden="true">
+          <div class="hero-circulo"></div>
+          <div class="hero-algodao" style="--candy:#F4B6C8">{% include "svg/algodao.svg" %}</div>
+          <div class="hero-maca">{% include "svg/maca.svg" %}</div>
+          <div class="hero-salgado">{% include "svg/salgado.svg" %}</div>
+          <span class="confete c1"></span><span class="confete c2"></span><span class="confete c3"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao secao--creme" id="salgados">
+      <div class="container">
+        <header class="secao-cabecalho">
+          <p class="sobretitulo">Salgados</p>
+          <h2>Encomende para a festa ou retire hoje no balcão</h2>
+        </header>
+
+        <div class="abas" role="tablist" aria-label="Tipo de pedido de salgados">
+          <button type="button" class="aba" role="tab" id="aba-encomenda" aria-controls="painel-encomenda" aria-selected="true" data-aba="encomenda">
+            <strong>Encomenda</strong>
+          </button>
+          <button type="button" class="aba" role="tab" id="aba-pickup" aria-controls="pickup" aria-selected="false" data-aba="pickup">
+            <strong>Pick-up</strong>
+          </button>
+        </div>
+
+        <div class="aba-painel" id="painel-encomenda" role="tabpanel" aria-labelledby="aba-encomenda" data-painel="encomenda">
+          {% for categoria, titulo in categorias.items() %}
+          <h3 class="grupo-titulo">{{ titulo }}</h3>
+          <div class="salgados">
+            {% for id, salgado in salgados.items() if salgado.categoria == categoria and not salgado.so_balcao %}
+            <form class="produto-form salgado" data-produto="{{ id }}" data-modo="{{ encomenda }}">
+              <div class="salgado-topo">
+                <h4>{{ salgado.nome }}</h4>
+                <span class="tag tag--{{ categoria }}">{{ 'Assado' if categoria == 'assado' else 'Frito' }}</span>
+              </div>
+              {% if salgado.sabores %}
+              <label class="campo-mini">
+                <span>Sabor</span>
+                <select name="sabor">
+                  {% for sabor in salgado.sabores %}<option value="{{ sabor }}">{{ sabores[sabor] }}</option>{% endfor %}
+                </select>
+              </label>
+              {% endif %}
+              <div class="pilulas pilulas--sm" role="radiogroup" aria-label="Tamanho">
+                {% for tamanho in salgado.tamanhos %}
+                <label><input type="radio" name="opcao" value="{{ tamanho }}" data-preco="{{ preco_salgado(id, tamanho, encomenda) }}" {% if loop.first %}checked{% endif %}><span>{{ tamanhos[tamanho].nome }} · {{ brl(preco_salgado(id, tamanho, encomenda)) }}</span></label>
+                {% endfor %}
+              </div>
+              <div class="produto-rodape">
+                <div class="qtd qtd--sm" data-qtd>
+                  <button type="button" data-menos aria-label="Diminuir quantidade">−</button>
+                  <input type="number" name="quantidade" value="0" min="0" max="999" inputmode="numeric" aria-label="Quantidade">
+                  <button type="button" data-mais aria-label="Aumentar quantidade">+</button>
+                </div>
+                <div class="produto-total"><strong data-subtotal></strong></div>
+              </div>
+              <button type="submit" class="btn btn-primario btn-bloco btn-sm">Adicionar</button>
+            </form>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="aba-painel" id="pickup" role="tabpanel" aria-labelledby="aba-pickup" data-painel="pickup" hidden>
+          <div class="pickup-faixa">
+            <div class="pickup-arte" data-arte-salgado aria-hidden="true">{% include "svg/salgado.svg" %}</div>
+            <div>
+              <h3>Peça no caminho, retire pronto.</h3>
+              <p>Só o que está na estufa agora, com preço de balcão. Pague antecipado via PIX ou na retirada. A gente separa e você só passa para pegar.</p>
+            </div>
+          </div>
+          <div class="estufa-topo">
+            <p class="estufa-status" data-estufa-status>Carregando a estufa…</p>
+            <button type="button" class="btn btn-fantasma btn-sm" data-atualizar-estufa>Atualizar</button>
+          </div>
+          <div data-estufa-lista></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao" id="doces">
+      <div class="container">
+        <header class="secao-cabecalho">
+          <p class="sobretitulo">Nossos doces</p>
+          <h2>Escolha, personalize e adicione ao carrinho</h2>
+        </header>
+
+        <div class="produtos">
+          {% set algodao = produtos.algodao %}
+          <article class="produto" id="algodao">
+            <div class="produto-arte produto-arte--algodao" data-arte-algodao style="--candy:#F4B6C8">
+              {% include "svg/algodao.svg" %}
+            </div>
+            <form class="produto-form" data-produto="algodao">
+              <h3>{{ algodao.nome }}</h3>
+              <p class="produto-desc">{{ algodao.descricao }}</p>
+
+              <fieldset>
+                <legend>Tipo</legend>
+                <div class="opcoes">
+                  {% for chave, opcao in algodao.opcoes.items() %}
+                  <label class="opcao">
+                    <input type="radio" name="opcao" value="{{ chave }}" data-preco="{{ opcao.preco }}" {% if loop.first %}checked{% endif %}>
+                    <span class="opcao-card">
+                      <span class="opcao-tipo">{{ opcao.tipo }}</span>
+                      <span class="opcao-nome">{{ opcao.nome.replace('Pote ', '') if opcao.tipo == 'Pote' else 'No palito' }}</span>
+                      <span class="opcao-detalhe">{{ opcao.detalhe }}</span>
+                      <span class="opcao-preco">{{ brl(opcao.preco) }}</span>
+                    </span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Cores <span class="legenda-valor" data-cor-nome>Rosa</span></legend>
+                <p class="dica-cores">Escolha uma ou mais para mesclar. Colorido leva todas as cores.</p>
+                <div class="cores">
+                  {% for chave, cor in algodao.cores.items() %}
+                  <label class="cor" title="{{ cor.nome }}">
+                    <input type="checkbox" name="cor" value="{{ chave }}" data-hex="{{ cor.hex or '' }}" data-nome="{{ cor.nome }}" {% if chave == 'rosa' %}checked{% endif %}>
+                    <span class="cor-bolinha {% if not cor.hex %}cor-bolinha--colorido{% endif %}" {% if cor.hex %}style="--cor:{{ cor.hex }}"{% endif %}></span>
+                    <span class="sr-only">{{ cor.nome }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+
+              <div class="produto-rodape">
+                <div class="qtd" data-qtd>
+                  <button type="button" data-menos aria-label="Diminuir quantidade">−</button>
+                  <input type="number" name="quantidade" value="0" min="0" max="999" inputmode="numeric" aria-label="Quantidade">
+                  <button type="button" data-mais aria-label="Aumentar quantidade">+</button>
+                </div>
+                <div class="produto-total"><span>Subtotal</span><strong data-subtotal></strong></div>
+              </div>
+              <button type="submit" class="btn btn-primario btn-bloco">Adicionar ao carrinho</button>
+            </form>
+          </article>
+
+          {% set maca = produtos.maca %}
+          <article class="produto" id="maca">
+            <div class="produto-arte produto-arte--maca">
+              {% include "svg/maca.svg" %}
+            </div>
+            <form class="produto-form" data-produto="maca">
+              <h3>{{ maca.nome }}</h3>
+              <p class="produto-desc">{{ maca.descricao }}</p>
+
+              <fieldset>
+                <legend>Tamanho</legend>
+                <div class="opcoes opcoes--2">
+                  {% for chave, opcao in maca.opcoes.items() %}
+                  <label class="opcao">
+                    <input type="radio" name="opcao" value="{{ chave }}" data-preco="{{ opcao.preco }}" {% if loop.first %}checked{% endif %}>
+                    <span class="opcao-card">
+                      <span class="opcao-tipo">Maçã</span>
+                      <span class="opcao-nome">{{ opcao.nome }}</span>
+                      <span class="opcao-detalhe">{{ opcao.detalhe }}</span>
+                      <span class="opcao-preco">{{ brl(opcao.preco) }}</span>
+                    </span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+
+              <div class="produto-rodape">
+                <div class="qtd" data-qtd>
+                  <button type="button" data-menos aria-label="Diminuir quantidade">−</button>
+                  <input type="number" name="quantidade" value="0" min="0" max="999" inputmode="numeric" aria-label="Quantidade">
+                  <button type="button" data-mais aria-label="Aumentar quantidade">+</button>
+                </div>
+                <div class="produto-total"><span>Subtotal</span><strong data-subtotal></strong></div>
+              </div>
+              <button type="submit" class="btn btn-primario btn-bloco">Adicionar ao carrinho</button>
+            </form>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao secao--verde" id="como-funciona">
+      <div class="container">
+        <header class="secao-cabecalho">
+          <p class="sobretitulo">Como funciona</p>
+          <h2>Do carrinho ao WhatsApp em três passos</h2>
+        </header>
+        <ol class="passos">
+          <li>
+            <span class="passo-num">1</span>
+            <h3>Monte o carrinho</h3>
+            <p>Encomenda para festa ou pick-up da estufa: escolha sabor, tamanho e quantidade.</p>
+          </li>
+          <li>
+            <span class="passo-num">2</span>
+            <h3>Preencha os dados</h3>
+            <p>Nome, telefone, quando vai retirar no local e a forma de pagamento.</p>
+          </li>
+          <li>
+            <span class="passo-num">3</span>
+            <h3>Envie pelo WhatsApp</h3>
+            <p>O pedido chega pronto, com todos os valores. No pick-up, seus salgados já ficam reservados.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="secao" id="informacoes">
+      <div class="container">
+        <header class="secao-cabecalho">
+          <p class="sobretitulo">Bom saber</p>
+          <h2>Informações do pedido</h2>
+        </header>
+        <div class="infos">
+          <article class="info">
+            <h3>Pick-up</h3>
+            <p>Salgados da estufa com preço de balcão: grande <strong>{{ brl(tamanhos.grande.precos[pickup]) }}</strong>, pequeno <strong>{{ brl(tamanhos.pequeno.precos[pickup]) }}</strong>, empadão <strong>{{ brl(salgados.empadao.preco_fixo) }}</strong>. Retire no mesmo dia e pague antecipado via PIX ou na retirada.</p>
+          </article>
+          <article class="info">
+            <h3>Promoção do fim do dia</h3>
+            <p>De segunda a sexta a partir das <strong>16h</strong> e aos sábados a partir das <strong>15h</strong>, o salgado grande de {{ brl(tamanhos.grande.precos[pickup]) }} sai por <strong>{{ brl(tamanhos.grande.promocao) }}</strong>. Vale no balcão e no pick-up, não na encomenda. Empadão e Hambúrguer ficam fora; o Hambúrguer de forno entra.</p>
+          </article>
+          <article class="info">
+            <h3>Retirada no local</h3>
+            <p>Não fazemos entrega: toda encomenda é retirada na <strong>{{ contato.endereco }}</strong>. {{ horario }}</p>
+          </article>
+          <article class="info">
+            <h3>Encomenda de salgados</h3>
+            <p>Para festas e eventos: grande <strong>{{ brl(tamanhos.grande.precos[encomenda]) }}</strong>, pequeno <strong>{{ brl(tamanhos.pequeno.precos[encomenda]) }}</strong> e empadão <strong>{{ brl(salgados.empadao.preco_fixo) }}</strong>, sem quantidade mínima.</p>
+          </article>
+          <article class="info">
+            <h3>Sinal de reserva</h3>
+            <p>Para garantir a data da encomenda, cobramos um sinal mínimo de <strong>{{ sinal }}</strong> do valor total. O restante é pago na retirada.</p>
+          </article>
+          <article class="info">
+            <h3>Caixa ou esteira</h3>
+            <p>O algodão doce pode ir em caixa ou na esteira de exposição. A esteira tem aluguel de <strong>{{ esteira }}</strong>, devolvido assim que ela retornar.</p>
+          </article>
+          <article class="info">
+            <h3>Pagamento</h3>
+            <p>Aceitamos <strong>PIX, cartão ou dinheiro</strong>. No pick-up, o pagamento antecipado é só via PIX.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container cta-inner">
+        <h2>Sua festa merece um salgadinho e um docinho a mais.</h2>
+        <a href="#salgados" class="btn btn-claro">Montar meu pedido</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-inner">
+      <div class="rodape-bloco">
+        <span class="marca marca--rodape">{{ loja }}</span>
+        <p>Salgados, algodão doce e maçã do amor. Encomendas e pick-up pelo WhatsApp.</p>
+      </div>
+      <div class="rodape-bloco">
+        <h2>Contato</h2>
+        <p>Telefone: <a href="tel:{{ contato.telefone_link }}">{{ contato.telefone }}</a></p>
+        <p>Celular: <a href="tel:{{ contato.celular_link }}">{{ contato.celular }}</a></p>
+        <p>Instagram: <a href="https://www.instagram.com/{{ contato.instagram }}/" target="_blank" rel="noopener">@{{ contato.instagram }}</a></p>
+      </div>
+      <div class="rodape-bloco">
+        <h2>Onde estamos</h2>
+        <p><a href="{{ contato.mapa }}" target="_blank" rel="noopener">{{ contato.endereco }}</a></p>
+        <p>{{ horario }}</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Carrinho -->
+  <div class="gaveta-fundo" data-fundo hidden></div>
+  <aside class="gaveta" data-gaveta aria-hidden="true" aria-label="Carrinho" role="dialog">
+    <header class="gaveta-topo">
+      <button type="button" class="gaveta-voltar" data-voltar hidden aria-label="Voltar ao carrinho">←</button>
+      <h2 data-gaveta-titulo>Seu carrinho</h2>
+      <button type="button" class="gaveta-fechar" data-fechar aria-label="Fechar">×</button>
+    </header>
+
+    <!-- Etapa 1: itens -->
+    <div class="etapa" data-etapa="itens">
+      <div class="gaveta-corpo">
+        <div class="vazio" data-vazio>
+          <p>Seu carrinho está vazio.</p>
+          <a href="#salgados" class="btn btn-fantasma" data-fechar>Escolher produtos</a>
+        </div>
+        <p class="modo-pedido" data-modo-pedido hidden></p>
+        <ul class="itens" data-itens></ul>
+      </div>
+      <footer class="gaveta-rodape" data-rodape-itens hidden>
+        <div class="linha-total"><span>Subtotal</span><strong data-carrinho-subtotal></strong></div>
+        <button type="button" class="btn btn-primario btn-bloco" data-ir-checkout>Finalizar pedido</button>
+      </footer>
+    </div>
+
+    <!-- Etapa 2: dados do pedido -->
+    <form class="etapa" data-etapa="checkout" novalidate hidden>
+      <div class="gaveta-corpo">
+        <div class="campo">
+          <label for="nome">Nome do cliente</label>
+          <input id="nome" name="nome" autocomplete="name" required>
+          <small class="erro" data-erro="nome"></small>
+        </div>
+        <div class="campo">
+          <label for="telefone">Telefone/Celular</label>
+          <input id="telefone" name="telefone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" required>
+          <small class="erro" data-erro="telefone"></small>
+        </div>
+        <div data-so-encomenda>
+          <div class="campo-grupo">
+            <div class="campo">
+              <label for="data">Data da retirada</label>
+              <input id="data" name="data" type="date" required>
+            </div>
+            <div class="campo">
+              <label for="horario">Horário</label>
+              <input id="horario" name="horario" type="time" required>
+            </div>
+          </div>
+          <small class="erro" data-erro="data"></small>
+          <small class="dica">Retirada no local: {{ contato.endereco }}. {{ horario }}</small>
+        </div>
+
+        <div class="campo" data-so-pickup hidden>
+          <label for="horario_retirada">Horário da retirada <span class="opcional">(hoje)</span></label>
+          <input id="horario_retirada" name="horario_retirada" type="time" required>
+          <small class="erro" data-erro="horario_retirada"></small>
+          <small class="dica">Retire na {{ contato.endereco }}.</small>
+        </div>
+
+        <fieldset class="campo" data-so-pickup hidden>
+          <legend>Quando vai pagar?</legend>
+          <div class="pilulas">
+            <label><input type="radio" name="momento_pagamento" value="antecipado" checked><span>Agora, via PIX</span></label>
+            <label><input type="radio" name="momento_pagamento" value="retirada"><span>Na retirada</span></label>
+          </div>
+          <small class="dica" data-dica-antecipado>Depois de enviar o pedido, mande o comprovante do PIX na conversa do WhatsApp.</small>
+          <small class="erro" data-erro="momento_pagamento"></small>
+        </fieldset>
+
+        <fieldset class="campo" data-pagamento-forma>
+          <legend data-pagamento-legenda>Método de pagamento</legend>
+          <div class="pilulas">
+            <label><input type="radio" name="pagamento" value="pix" checked><span>PIX</span></label>
+            <label><input type="radio" name="pagamento" value="cartao"><span>Cartão</span></label>
+            <label><input type="radio" name="pagamento" value="dinheiro"><span>Dinheiro</span></label>
+          </div>
+          <small class="erro" data-erro="pagamento"></small>
+        </fieldset>
+
+        <fieldset class="campo" data-so-algodao hidden>
+          <legend>Como vai levar o algodão</legend>
+          <div class="pilulas">
+            <label><input type="radio" name="modo_entrega" value="caixa" checked><span>Caixa</span></label>
+            <label><input type="radio" name="modo_entrega" value="esteira"><span>Esteira + {{ esteira }}</span></label>
+          </div>
+          <small class="dica" data-dica-esteira hidden>Aluguel da esteira: {{ esteira }}, devolvido após a devolução da esteira.</small>
+          <small class="erro" data-erro="modo_entrega"></small>
+        </fieldset>
+
+        <div class="campo">
+          <label for="observacoes">Observações <span class="opcional">(opcional)</span></label>
+          <textarea id="observacoes" name="observacoes" rows="2" maxlength="500" placeholder="Endereço, tema da festa, ponto de referência…"></textarea>
+        </div>
+
+        <div class="resumo">
+          <div class="linha"><span>Produtos</span><span data-r-subtotal></span></div>
+          <div class="linha" data-r-esteira-linha hidden><span>Aluguel da esteira</span><span data-r-esteira></span></div>
+          <div class="linha linha--total"><span>Total</span><strong data-r-total></strong></div>
+          <div class="campo campo--sinal" data-so-encomenda>
+            <label for="sinal">Valor do sinal</label>
+            <div class="input-moeda"><span>R$</span><input id="sinal" name="sinal" type="number" step="0.01" inputmode="decimal"></div>
+            <small class="dica" data-dica-sinal></small>
+            <small class="erro" data-erro="sinal"></small>
+          </div>
+          <div class="linha" data-so-encomenda><span>Restante na retirada</span><span data-r-restante></span></div>
+        </div>
+        <small class="erro erro--geral" data-erro="carrinho"></small>
+      </div>
+      <footer class="gaveta-rodape">
+        <button type="submit" class="btn btn-primario btn-bloco">Revisar pedido</button>
+      </footer>
+    </form>
+
+    <!-- Etapa 3: enviar -->
+    <div class="etapa" data-etapa="enviar" hidden>
+      <div class="gaveta-corpo">
+        <p class="enviar-intro" data-enviar-intro></p>
+        <pre class="mensagem" data-mensagem></pre>
+        <small class="erro erro--geral" data-erro-envio></small>
+      </div>
+      <footer class="gaveta-rodape">
+        <button type="button" class="btn btn-whats btn-bloco" data-enviar-whats>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+          Enviar pedido pelo WhatsApp
+        </button>
+      </footer>
+    </div>
+  </aside>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+
+  <script id="loja-config" type="application/json">{{ config | tojson }}</script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

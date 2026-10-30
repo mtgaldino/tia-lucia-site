@@ -1,0 +1,16 @@
+{% extends "painel_base.html" %}
+{% block conteudo %}
+<main class="login">
+  <form class="login-cartao" method="post" action="{{ url_for('painel_entrar') }}">
+    <p class="sobretitulo">Painel da loja</p>
+    <h1>{{ loja }}</h1>
+    <div class="campo {% if erro %}invalido{% endif %}">
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" autocomplete="current-password" required autofocus>
+      {% if erro %}<small class="erro">{{ erro }}</small>{% endif %}
+    </div>
+    <button class="btn btn-primario btn-bloco" type="submit">Entrar</button>
+    <a class="voltar-site" href="{{ url_for('index') }}">← Voltar ao site</a>
+  </form>
+</main>
+{% endblock %}

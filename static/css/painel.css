@@ -1,0 +1,75 @@
+.painel-corpo { background: var(--creme-claro); }
+
+/* Login ---------------------------------------------------------------- */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.login-cartao {
+  width: min(380px, 100%); display: grid; gap: 18px; padding: 32px;
+  background: #fff; border-radius: 24px; border: 1px solid var(--linha); box-shadow: var(--sombra);
+}
+.login-cartao h1 { font-size: 1.6rem; color: var(--marrom); margin-top: -10px; }
+.voltar-site { text-align: center; color: var(--texto-suave); font-weight: 700; text-decoration: none; }
+
+/* Painel --------------------------------------------------------------- */
+.painel-corpo .marca { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.painel-nav { display: flex; align-items: center; gap: 18px; margin-left: auto; font-weight: 700; }
+.painel-nav a { text-decoration: none; color: var(--texto-suave); display: inline-flex; align-items: center; gap: 6px; }
+.painel-nav a:hover { color: var(--marrom); }
+.painel-nav form { margin: 0; }
+.link-botao { border: 0; background: none; cursor: pointer; font-weight: 700; color: var(--erro); padding: 0; }
+
+.painel { padding-block: 24px 64px; }
+.aviso {
+  padding: 12px 16px; border-radius: var(--raio-sm); background: var(--salvia); color: var(--papel);
+  font-weight: 700; margin-bottom: 16px;
+}
+.painel-secao { margin-top: 32px; }
+.painel-cabecalho h2 { font-size: 1.8rem; }
+.painel-cabecalho p { color: var(--texto-suave); margin-top: 4px; }
+.vazio-painel { margin-top: 16px; padding: 20px; border-radius: var(--raio-sm); background: #fff; color: var(--texto-suave); }
+
+.reservas { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.reserva {
+  display: grid; gap: 8px; padding: 16px; border-radius: var(--raio); background: #fff;
+  border: 1px solid var(--linha); border-left: 6px solid var(--salvia);
+}
+.reserva--atrasada { border-left-color: var(--erro); }
+.reserva-topo { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.reserva-codigo { font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.4rem; letter-spacing: .06em; }
+.reserva-hora { font-weight: 800; color: var(--salvia-escuro); font-size: .9rem; }
+.reserva--atrasada .reserva-hora { color: var(--erro); }
+.reserva-itens { margin: 0; padding-left: 18px; color: var(--texto-suave); }
+.reserva-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.reserva-acoes form { margin: 0; }
+
+.estufa-tabela {
+  width: 100%; border-collapse: separate; border-spacing: 0; background: #fff;
+  border: 1px solid var(--linha); border-radius: var(--raio-sm); overflow: hidden;
+}
+.estufa-tabela th, .estufa-tabela td { padding: 8px 12px; border-bottom: 1px solid var(--linha); text-align: left; }
+.estufa-tabela tbody tr:last-child > * { border-bottom: 0; }
+.estufa-tabela thead th { background: var(--creme); font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; }
+.estufa-tabela thead th:not(:first-child), .estufa-tabela td { width: 120px; text-align: center; }
+.estufa-tabela tbody th { font-weight: 700; }
+.estufa-tabela .sabor { display: block; font-weight: 600; font-size: .85rem; color: var(--texto-suave); }
+.estufa-tabela input {
+  width: 80px; padding: 8px; text-align: center; font-weight: 800;
+  border: 2px solid var(--linha); border-radius: var(--raio-sm); background: var(--papel);
+}
+.estufa-tabela input.tem { border-color: var(--salvia); background: color-mix(in srgb, var(--salvia) 12%, #fff); }
+.estufa-tabela input:focus { outline: none; border-color: var(--marrom); }
+.nao-tem { color: var(--linha); font-weight: 800; }
+
+.estufa-acoes {
+  position: sticky; bottom: 0; display: flex; gap: 12px; flex-wrap: wrap;
+  padding: 16px 0; margin-top: 16px; background: var(--creme-claro);
+}
+
+@media (max-width: 640px) {
+  .painel-nav { gap: 12px; font-size: .9rem; }
+  .painel-nav a[target] { display: none; }
+  .topo-inner { gap: 12px; }
+  .topo-inner .marca { font-size: 1rem; }
+  .estufa-tabela th, .estufa-tabela td { padding: 8px 6px; }
+  .estufa-tabela input { width: 64px; }
+  .estufa-tabela thead th:not(:first-child), .estufa-tabela td { width: 76px; }
+}

@@ -1,0 +1,93 @@
+{% extends "painel_base.html" %}
+{% block conteudo %}
+<header class="topo">
+  <div class="container topo-inner">
+    <span class="marca">Painel · {{ loja }}</span>
+    <nav class="painel-nav">
+      <a href="#estufa">Estufa</a>
+      <a href="#reservas">Reservas{% if reservas %} <span class="badge">{{ reservas|length }}</span>{% endif %}</a>
+      <a href="{{ url_for('index') }}" target="_blank" rel="noopener">Ver site</a>
+      <form method="post" action="{{ url_for('painel_sair') }}"><button class="link-botao" type="submit">Sair</button></form>
+    </nav>
+  </div>
+</header>
+
+<main class="container painel">
+  {% for mensagem in get_flashed_messages() %}
+  <p class="aviso" role="status">{{ mensagem }}</p>
+  {% endfor %}
+
+  <section id="reservas" class="painel-secao">
+    <header class="painel-cabecalho">
+      <h2>Reservas de pick-up</h2>
+      <p>Pedidos enviados pelo site que ainda não foram retirados. As unidades já saíram da estufa.</p>
+    </header>
+    {% if reservas %}
+    <ul class="reservas">
+      {% for r in reservas %}
+      <li class="reserva {% if r.retirada_em < agora %}reserva--atrasada{% endif %}">
+        <div class="reserva-topo">
+          <span class="reserva-codigo">{{ r.codigo }}</span>
+          <span class="reserva-hora">{{ r.retirada_em.strftime('%d/%m · %H:%M') }}{% if r.retirada_em < agora %} · horário passou{% endif %}</span>
+        </div>
+        <p class="reserva-cliente"><strong>{{ r.cliente }}</strong> · <a href="tel:{{ r.telefone }}">{{ r.telefone }}</a></p>
+        <ul class="reserva-itens">
+          {% for item in r.itens %}<li>{{ item.quantidade }}x {{ item.descricao }}</li>{% endfor %}
+        </ul>
+        <p class="reserva-total"><strong>{{ r.total }}</strong> · {{ r.pagamento }}</p>
+        <div class="reserva-acoes">
+          <form method="post" action="{{ url_for('painel_reserva', codigo=r.codigo, acao='retirada') }}">
+            <button class="btn btn-primario btn-sm" type="submit">Retirado</button>
+          </form>
+          <form method="post" action="{{ url_for('painel_reserva', codigo=r.codigo, acao='cancelar') }}"
+                onsubmit="return confirm('Cancelar a reserva {{ r.codigo }} e devolver as unidades para a estufa?')">
+            <button class="btn btn-fantasma btn-sm" type="submit">Cancelar e devolver</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio-painel">Nenhuma reserva pendente.</p>
+    {% endif %}
+  </section>
+
+  <section id="estufa" class="painel-secao">
+    <header class="painel-cabecalho">
+      <h2>Estufa</h2>
+      <p>Informe quantas unidades de cada salgado estão na estufa agora. Só aparece no pick-up o que tiver quantidade acima de zero.</p>
+    </header>
+    <form method="post" action="{{ url_for('painel_estufa') }}" class="estufa-form">
+      {% for categoria, titulo in categorias.items() %}
+      <h3 class="grupo-titulo">{{ titulo }}</h3>
+      <table class="estufa-tabela">
+        <thead>
+          <tr><th>Salgado</th>{% for t in tamanhos.values() %}<th>{{ t.nome }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for linha in linhas if linha.categoria == categoria %}
+          <tr>
+            <th scope="row">{{ linha.nome }}{% if linha.sabor %} <span class="sabor">{{ linha.sabor }}</span>{% endif %}</th>
+            {% for tamanho in tamanhos %}
+            <td>
+              {% if tamanho in linha.celulas %}
+              {% set c = linha.celulas[tamanho] %}
+              <input type="number" name="{{ c.campo }}" value="{{ c.valor }}" min="0" max="9999" inputmode="numeric"
+                     aria-label="{{ linha.nome }} {{ linha.sabor or '' }} {{ tamanhos[tamanho].nome }}" class="{% if c.valor %}tem{% endif %}">
+              {% else %}<span class="nao-tem">—</span>{% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endfor %}
+      <div class="estufa-acoes">
+        <button class="btn btn-primario" type="submit">Salvar estufa</button>
+        <button class="btn btn-fantasma" type="submit" name="zerar" value="1"
+                onclick="return confirm('Zerar a estufa inteira? O pick-up fica sem salgados até você lançar de novo.')">Zerar tudo</button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
